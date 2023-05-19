@@ -35,17 +35,17 @@ class Men_Joggers(models.Model):
 class Glasses(models.Model):
     
     image = models.ImageField(upload_to="files/covers")
-    price = models.FloatField
+    price = models.FloatField()
 
 class Earring(models.Model):
     
     image = models.ImageField(upload_to="files/covers")
-    price = models.FloatField
+    price = models.FloatField()
 
 class Necklace(models.Model):
     
     image = models.ImageField(upload_to="files/covers")
-    price = models.FloatField
+    price = models.FloatField()
 
 class Women_Shirt(models.Model):
     
