@@ -10,6 +10,8 @@ class Men_Shirt(models.Model):
     price = models.FloatField()
     color = models.CharField(max_length=50)
     image = models.ImageField(upload_to='files/covers')
+
+
 #
 class Men_Jacket(models.Model):
     

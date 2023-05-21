@@ -1,17 +1,20 @@
 from pstats import Stats, StatsProfile
-from django.http import Http404
+from django.http import Http404,JsonResponse
 from rest_framework import status
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from .serializers import *
 from .models import *
 
+
 class MenShirtAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         shirts = Men_Shirt.objects.all()
         serializer = MenShirtSerializer(shirts,many=True)
-        return Response(serializer.data)
+        return JsonResponse({'MenShirts': serializer.data})
     
     def post(self,request,format=None):
         serializer = MenShirtSerializer(data=request.data)
@@ -22,6 +25,7 @@ class MenShirtAPIView(APIView):
     
 
 class MenShirtDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         shirts = Men_Shirt.objects.filter(id=id)
         serializer = MenShirtSerializer(shirts,many=True)
@@ -40,6 +44,7 @@ class MenShirtDetailAPIView(APIView):
         shirts.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 class MenJacketAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Jacket = Men_Jacket.objects.all()
         serializer = MenJacketSerializer(Jacket,many=True)
@@ -52,6 +57,7 @@ class MenJacketAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class MenJacketDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Jackets = Men_Jacket.objects.filter(id=id)
         serializer = MenJacketSerializer(Jackets,many=True)
@@ -71,6 +77,7 @@ class MenJacketDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class MenPantsAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Pantss = Men_Pants.objects.all()
         serializer = MenPantsSerializer(Pantss,many=True)
@@ -83,6 +90,7 @@ class MenPantsAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class MenPantsDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Pantss = Men_Pants.objects.filter(id=id)
         serializer = MenPantsSerializer(Pantss,many=True)
@@ -101,6 +109,7 @@ class MenPantsDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class MenJoggersAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Joggerss = Men_Joggers.objects.all()
         serializer = MenJoggersSerializer(Joggerss,many=True)
@@ -113,6 +122,7 @@ class MenJoggersAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class MenJoggersDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Joggerss = Men_Joggers.objects.filter(id=id)
         serializer = MenJoggersSerializer(Joggerss,many=True)
@@ -131,6 +141,7 @@ class MenJoggersDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class GlassesAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Joggerss = Glasses.objects.all()
         serializer = GlassesSerializer(Joggerss,many=True)
@@ -142,6 +153,7 @@ class GlassesAPIView(APIView):
             serializer.save()
             return Response(serializer.data,status=status.HTTP_201_CREATED)
 class GlassesDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Joggerss = Glasses.objects.filter(id=id)
         serializer = GlassesSerializer(Joggerss,many=True)
@@ -160,6 +172,7 @@ class GlassesDetailAPIView(APIView):
     
 
 class EarringAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Joggerss = Earring.objects.all()
         serializer = EarringSerializer(Joggerss,many=True)
@@ -172,6 +185,7 @@ class EarringAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class EarringDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Joggerss = Earring.objects.filter(id=id)
         serializer = EarringSerializer(Joggerss,many=True)
@@ -190,6 +204,7 @@ class EarringDetailAPIView(APIView):
     
 
 class NecklaceAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Joggerss = Necklace.objects.all()
         serializer = NecklaceSerializer(Joggerss,many=True)
@@ -202,6 +217,7 @@ class NecklaceAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class NecklaceDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Joggerss = Necklace.objects.filter(id=id)
         serializer = NecklaceSerializer(Joggerss,many=True)
@@ -220,6 +236,7 @@ class NecklaceDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class Women_ShirtAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Joggerss = Women_Shirt.objects.all()
         serializer = WomenShirtSerializer(Joggerss,many=True)
@@ -232,6 +249,7 @@ class Women_ShirtAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class Women_ShirtDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Joggerss = Women_Shirt.objects.filter(id=id)
         serializer = WomenShirtSerializer(Joggerss,many=True)
@@ -250,6 +268,7 @@ class Women_ShirtDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Women_JacketAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Joggerss = Women_Jacket.objects.all()
         serializer = WomenJacketSerializer(Joggerss,many=True)
@@ -262,6 +281,7 @@ class Women_JacketAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class Women_JacketDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Joggerss = Women_Jacket.objects.filter(id=id)
         serializer = WomenJacketSerializer(Joggerss,many=True)
@@ -280,6 +300,7 @@ class Women_JacketDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Women_PantsAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Joggerss = Women_Pants.objects.all()
         serializer = WomenPantsSerializer(Joggerss,many=True)
@@ -292,6 +313,7 @@ class Women_PantsAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class Women_PantsDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Joggerss = Women_Pants.objects.filter(id=id)
         serializer = WomenPantsSerializer(Joggerss,many=True)
@@ -310,6 +332,7 @@ class Women_PantsDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Women_JoggersAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,format=None):
         Joggerss = Women_Joggers.objects.all()
         serializer = WomenJoggersSerializer(Joggerss,many=True)
@@ -322,6 +345,7 @@ class Women_JoggersAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
     
 class Women_JoggersDetailAPIView(APIView):
+    permission_classes  = [AllowAny]
     def get(self,request,id=None):
         Joggerss = Women_Joggers.objects.filter(id=id)
         serializer = WomenJoggersSerializer(Joggerss,many=True)
@@ -340,6 +364,7 @@ class Women_JoggersDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CartAPIView(APIView):
+    permission_classes  = [IsAuthenticated]
     def get(self,request,format=None):
         Joggerss = Cart.objects.all()
         serializer = CartSerializer(Joggerss,many=True)

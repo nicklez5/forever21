@@ -6,6 +6,7 @@ from rest_framework import status
 from .serializers import SerializeProfile
 from .models import Profile
 
+
 class ProfileList(APIView):
     serializer_class = SerializeProfile
     permission_classes = [IsAuthenticated]
