@@ -27,16 +27,19 @@ class MenShirtAPIView(APIView):
 class MenShirtDetailAPIView(APIView):
     permission_classes  = [AllowAny]
     def get(self,request,id=None):
-        shirts = Men_Shirt.objects.filter(id=id)
+        try:
+            shirts = Men_Shirt.objects.get(pk=id)
+        except Men_Shirt.DoesNotExist:
+            raise Http404('Men Shirt does not exist')
         serializer = MenShirtSerializer(shirts,many=True)
-        return Response(serializer.data)
+        return JsonResponse({'menshirt':serializer.data})
     
     def put(self,request,id=None):
         shirts = Men_Shirt.objects.get(id=id)
         serializer = MenShirtSerializer(shirts,data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return JsonResponse({'menshirt':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id=None):

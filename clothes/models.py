@@ -9,7 +9,7 @@ class Men_Shirt(models.Model):
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    
+    name = models.CharField(max_length=100)
    
 
 #
@@ -18,55 +18,64 @@ class Men_Jacket(models.Model):
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
 
 class Men_Pants(models.Model):
     img_url = models.URLField(max_length=500)
     waist_size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
 
 class Men_Joggers(models.Model):
     img_url = models.URLField(max_length=500)
     waist_size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
 
 class Glasses(models.Model):
     img_url = models.URLField(max_length=500)
     price = models.FloatField()
+    name = models.CharField(max_length=100)
 
 class Earring(models.Model):
     img_url = models.URLField(max_length=500)
     price = models.FloatField()
+    name = models.CharField(max_length=100)
 
 class Necklace(models.Model):
     img_url = models.URLField(max_length=500)
     price = models.FloatField()
+    name = models.CharField(max_length=100)
 
 class Women_Shirt(models.Model):
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
     img_url = models.URLField(max_length=500)
+    name = models.CharField(max_length=100)
 
 class Women_Jacket(models.Model):
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
     img_url = models.URLField(max_length=500)
+    name = models.CharField(max_length=100)
 
 class Women_Pants(models.Model):
     img_url = models.URLField(max_length=500)
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
 
 class Women_Joggers(models.Model):
     img_url = models.URLField(max_length=500)
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-
+    name = models.CharField(max_length=100)
 
     
 class Cart(models.Model):
