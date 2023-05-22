@@ -5,75 +5,68 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin, UserManager
 # Create your models here.
 class Men_Shirt(models.Model):
-    
+    img_url = models.URLField(max_length=500)
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='files/covers')
-
+    
+   
 
 #
 class Men_Jacket(models.Model):
-    
+    img_url = models.URLField(max_length=500)
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='files/covers')
 
 class Men_Pants(models.Model):
-    
+    img_url = models.URLField(max_length=500)
     waist_size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='files/covers')
 
 class Men_Joggers(models.Model):
-    
+    img_url = models.URLField(max_length=500)
     waist_size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='files/covers')
 
 class Glasses(models.Model):
-    
-    image = models.ImageField(upload_to="files/covers")
+    img_url = models.URLField(max_length=500)
     price = models.FloatField()
 
 class Earring(models.Model):
-    
-    image = models.ImageField(upload_to="files/covers")
+    img_url = models.URLField(max_length=500)
     price = models.FloatField()
 
 class Necklace(models.Model):
-    
-    image = models.ImageField(upload_to="files/covers")
+    img_url = models.URLField(max_length=500)
     price = models.FloatField()
 
 class Women_Shirt(models.Model):
-    
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    image = models.ImageField(upload_to="files/covers")
+    img_url = models.URLField(max_length=500)
 
 class Women_Jacket(models.Model):
-    
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    image = models.ImageField(upload_to="files/covers")
+    img_url = models.URLField(max_length=500)
 
 class Women_Pants(models.Model):
+    img_url = models.URLField(max_length=500)
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    image = models.ImageField(upload_to="files/covers")
 
 class Women_Joggers(models.Model):
+    img_url = models.URLField(max_length=500)
     size = models.CharField(max_length=50)
     price = models.FloatField()
     color = models.CharField(max_length=50)
-    image = models.ImageField(upload_to="files/covers")
+
 
     
 class Cart(models.Model):

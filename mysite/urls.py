@@ -22,5 +22,4 @@ urlpatterns = [
     path('api/clothes/',include('clothes.urls')),
     path('api/users/',include('users.urls')),
     path('api/profiles/',include('profiles.urls')),
-    
 ]
