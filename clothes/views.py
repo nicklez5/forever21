@@ -5,6 +5,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from django.http import HttpResponseNotFound
 from .serializers import *
 from .models import *
 
@@ -20,7 +21,7 @@ class MenShirtAPIView(APIView):
         serializer = MenShirtSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return JsonResponse(serializer.data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -28,11 +29,13 @@ class MenShirtDetailAPIView(APIView):
     permission_classes  = [AllowAny]
     def get(self,request,id=None):
         try:
-            shirts = Men_Shirt.objects.get(pk=id)
+            shirts = Men_Shirt.objects.filter(id=id)
+            if shirts == []:
+                raise HttpResponseNotFound("Men Shirt is not found")
+            serializer = MenShirtSerializer(shirts,many=True)
+            return JsonResponse({'menshirt':serializer.data})
         except Men_Shirt.DoesNotExist:
-            raise Http404('Men Shirt does not exist')
-        serializer = MenShirtSerializer(shirts,many=True)
-        return JsonResponse({'menshirt':serializer.data})
+            return HttpResponseNotFound("Men Shirt is not found")
     
     def put(self,request,id=None):
         shirts = Men_Shirt.objects.get(id=id)
