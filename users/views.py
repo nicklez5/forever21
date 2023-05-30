@@ -15,36 +15,17 @@ from rest_framework.authtoken.models import Token
 from .models import CustomUser 
 from .serializers import UserChangePasswordSerializer, UserSerializer, UserLoginSerializer, RegisterSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
-
-
-class UserList(APIView):
-    serializer_class = UserSerializer
-    permission_classes = [AllowAny]
-
-    def get(self,request):
-        queryset = CustomUser.objects.all() 
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-class CustomAuthToken(ObtainAuthToken):
-    serializer_class = UserLoginSerializer
-    permission_classes = [AllowAny]
-    def post(self,request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email,
-            'staff': user.is_staff
-        })
-
-class RegisterView(APIView):
-    
-    permission_classes = [AllowAny]
-    def post(self,request,format=None):
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def user_list(request):
+     if request.method == 'GET':
+          queryset = CustomUser.objects.all()
+          serializer = UserSerializer(queryset,many=True)
+          return Response(serializer.data)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register(request):
+    if request.method == 'POST':
         reg_serializer = RegisterSerializer(data=request.data)
         data = {}
         if reg_serializer.is_valid():
@@ -57,47 +38,41 @@ class RegisterView(APIView):
         else:
             data = reg_serializer.errors
         return Response(data)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def enter(request):
     
-class UserView(APIView):
-
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserSerializer
-
-    def get_object(self,pk):
-        try: 
-            return CustomUser.objects.get(pk=pk)
-        except CustomUser.DoesNotExist:
-            raise status.HTTP_404_NOT_FOUND
-
-    def get(self,request,pk,format=None):
-        custom_user = self.get_object(pk)
-        serializer = UserSerializer(custom_user)
-        return Response(serializer.data)
-    
-    def delete(self,request,pk,format=None):
-        custom_user = self.get_object(pk)
-        custom_user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def put(self,request,pk,format=None):
-        custom_user = self.get_object(pk)
-        serializer = UserSerializer(custom_user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class UpdatePassword(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self,pk):
+    if request.method == 'POST':
+         serializer_class = UserLoginSerializer(data=request.data)
+         serializer_class.is_valid(raise_exception=True)
+         user = serializer_class.validated_data['user']
+         #token, created = Token.objects.get_or_create(user=user)
+         return Response({
+             #'token'  : token.key,
+             'user_id': user.pk,
+            'email': user.email
+         })
+@api_view(['GET','DELETE'])
+@permission_classes([IsAuthenticated])
+def users(request,id):
         try:
-            return CustomUser.objects.get(pk=pk)
-        except CustomUser.DoesNotExist:
+            custom_user = CustomUser.objects.get(pk=id)
+        except custom_user.DoesNotExist:
             raise status.HTTP_404_NOT_FOUND
-
-    def put(self,request,pk,format=None):
-        custom_user = self.get_object(pk)
+        if(request.method) == 'GET':
+            serializer = UserSerializer(custom_user)
+            return Response(serializer.data)
+        elif(request.method) == 'DELETE':
+            custom_user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+        try:
+            custom_user = CustomUser.objects.get(pk=id)
+        except custom_user.DoesNotExist:
+            raise status.HTTP_404_NOT_FOUND
         serializer = UserChangePasswordSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -110,19 +85,10 @@ class UpdatePassword(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class HomeView(APIView):
+     permission_classes = (IsAuthenticated,)
+     def get(self,request):
+        content = {'message': 'Welcome to the JWT Authentication page using React Js and Django!'}
+        return Response(content)
     
-# Create your views here.
-# class CustomAuthToken(ObtainAuthToken):
-#     serializer_class = UserLoginSerializer
-#     permission_classes = [AllowAny]
 
-#     def post(self,request,*args, **kwargs):
-#         serializer = self.serializer_class(data=request.data,context={'request':request})
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
-#         token, created = Token.objects.get_or_create(user=user)
-#         return Response({
-#             'token': token.key,
-#             'user_id': user.pk,
-#             'email': user.email
-#         })

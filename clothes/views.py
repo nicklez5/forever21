@@ -2,397 +2,420 @@ from pstats import Stats, StatsProfile
 from django.http import Http404,JsonResponse
 from rest_framework import status
 from django.shortcuts import render
-from rest_framework.views import APIView
+from rest_framework.decorators import api_view,APIView,permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from django.http import HttpResponseNotFound
 from .serializers import *
 from .models import *
-
-
-class MenShirtAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([AllowAny])
+def menshirts(request):
+    if request.method == 'GET':
         shirts = Men_Shirt.objects.all()
         serializer = MenShirtSerializer(shirts,many=True)
-        return JsonResponse({'MenShirts': serializer.data})
-    
-    def post(self,request,format=None):
+        return Response({'MenShirts': serializer.data})
+
+    elif request.method == 'POST':
         serializer = MenShirtSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data,status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    
+            return Response({'MenShirts':serializer.data},status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class MenShirtDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        try:
-            shirts = Men_Shirt.objects.filter(id=id)
-            if shirts == []:
-                raise HttpResponseNotFound("Men Shirt is not found")
-            serializer = MenShirtSerializer(shirts,many=True)
-            return JsonResponse({'menshirt':serializer.data})
-        except Men_Shirt.DoesNotExist:
-            return HttpResponseNotFound("Men Shirt is not found")
+@api_view(['GET','POST','DELETE'])
+@permission_classes([AllowAny])
+def menshirt(request,id):
+    try: 
+        data = Men_Shirt.objects.get(id=id)
+    except Men_Shirt.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-    def put(self,request,id=None):
-        shirts = Men_Shirt.objects.get(id=id)
-        serializer = MenShirtSerializer(shirts,data=request.data)
+    if request.method == 'GET':
+        
+        serializer = MenShirtSerializer(data)
+        return Response({'MenShirt':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = MenShirtSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse({'menshirt':serializer.data})
+            return Response({'MenShirt':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, id=None):
-        shirts = Men_Shirt.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-class MenJacketAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Jacket = Men_Jacket.objects.all()
-        serializer = MenJacketSerializer(Jacket,many=True)
-        return Response(serializer.data)
     
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def menjackets(request):
+    if request.method == 'GET':
+        jackets = Men_Jacket.objects.all()
+        serializer = MenJacketSerializer(jackets,many=True)
+        return Response({'MenJackets': serializer.data})
+    elif request.method == 'POST':
         serializer = MenJacketSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'MenJackets':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def menjacket(request):
+    try:
+        data = Men_Jacket.objects.get(pk=id)
+    except Men_Jacket.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class MenJacketDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Jackets = Men_Jacket.objects.filter(id=id)
-        serializer = MenJacketSerializer(Jackets,many=True)
-        return Response(serializer.data)
-    
-    def put(self,request,id=None):
-        Jackets = Men_Jacket.objects.get(id=id)
-        serializer = MenJacketSerializer(Jackets,data=request.data)
+    if request.method == 'GET':
+        serializer = MenJacketSerializer(data)
+        return Response({'MenJacket':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = MenJacketSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'MenJacket':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, id=None):
-        shirts = Men_Jacket.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class MenPantsAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Pantss = Men_Pants.objects.all()
-        serializer = MenPantsSerializer(Pantss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([AllowAny])
+def menpants(request):
+    if request.method == 'GET':
+        pants = Men_Pants.objects.all()
+        serializer = MenPantsSerializer(pants,many=True)
+        return Response({'MenPants': serializer.data})
+    elif request.method == 'POST':
         serializer = MenPantsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'MenPants':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','POST','DELETE'])
+@permission_classes([AllowAny])
+def menpant(request):
+    try:
+        data = Men_Pants.objects.get(pk=id)
+    except Men_Pants.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class MenPantsDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Pantss = Men_Pants.objects.filter(id=id)
-        serializer = MenPantsSerializer(Pantss,many=True)
-        return Response(serializer.data)
-    
-    def put(self,request,id=None):
-        Pantss = Men_Pants.objects.get(id=id)
-        serializer = MenPantsSerializer(Pantss,data=request.data)
+    if request.method == 'GET':
+        serializer = MenPantsSerializer(data)
+        return Response({'MenJacket':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = MenPantsSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'MenPant':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Men_Pants.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class MenJoggersAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Joggerss = Men_Joggers.objects.all()
-        serializer = MenJoggersSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([AllowAny])
+def menjoggers(request):
+    if request.method == 'GET':
+        joggers = Men_Joggers.objects.all()
+        serializer = MenJoggersSerializer(joggers,many=True)
+        return Response({'MenJoggers': serializer.data})
+    elif request.method == 'POST':
         serializer = MenJoggersSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'MenJoggers':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([AllowAny])
+def menjogger(request):
+    try:
+        data = Men_Joggers.objects.get(pk=id)
+    except Men_Joggers.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class MenJoggersDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Joggerss = Men_Joggers.objects.filter(id=id)
-        serializer = MenJoggersSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def put(self,request,id=None):
-        Joggerss = Men_Joggers.objects.get(id=id)
-        serializer = MenJoggersSerializer(Joggerss,data=request.data)
+    if request.method == 'GET':
+        serializer = MenJoggersSerializer(data)
+        return Response({'MenJogger':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = MenJoggersSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'MenJogger':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Men_Joggers.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class GlassesAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Joggerss = Glasses.objects.all()
-        serializer = GlassesSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def glasses(request):
+    if request.method == 'GET':
+        glasses = Glasses.objects.all()
+        serializer = GlassesSerializer(glasses,many=True)
+        return Response({'Glasses': serializer.data})
+    elif request.method == 'POST':
         serializer = GlassesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-class GlassesDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Joggerss = Glasses.objects.filter(id=id)
-        serializer = GlassesSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    def put(self,request,id=None):
-        Joggerss = Glasses.objects.get(id=id)
-        serializer = GlassesSerializer(Joggerss,data=request.data)
+            return Response({'Glasses':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def glass(request):
+    try:
+        data = Glasses.objects.get(pk=id)
+    except Glasses.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = GlassesSerializer(data)
+        return Response({'Glass':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = GlassesSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'Glass':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Glasses.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-
-class EarringAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Joggerss = Earring.objects.all()
-        serializer = EarringSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def earrings(request):
+    if request.method == 'GET':
+        earrings = Earring.objects.all()
+        serializer = EarringSerializer(earrings,many=True)
+        return Response({'Earrings': serializer.data})
+    elif request.method == 'POST':
         serializer = EarringSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'Earrings':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def earring(request):
+    try:
+        data = Earring.objects.get(pk=id)
+    except Earring.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class EarringDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Joggerss = Earring.objects.filter(id=id)
-        serializer = EarringSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    def put(self,request,id=None):
-        Joggerss = Earring.objects.get(id=id)
-        serializer = EarringSerializer(Joggerss,data=request.data)
+    if request.method == 'GET':
+        serializer = Earring(data)
+        return Response({'Earring':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = EarringSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'Earring':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Earring.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
 
-class NecklaceAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Joggerss = Necklace.objects.all()
-        serializer = NecklaceSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def necklaces(request):
+    if request.method == 'GET':
+        necklaces = Necklace.objects.all()
+        serializer = NecklaceSerializer(necklaces,many=True)
+        return Response({'Necklaces': serializer.data})
+    elif request.method == 'POST':
         serializer = NecklaceSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'Necklaces':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def necklace(request):
+    try:
+        data = Necklace.objects.get(pk=id)
+    except Necklace.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class NecklaceDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Joggerss = Necklace.objects.filter(id=id)
-        serializer = NecklaceSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def put(self,request,id=None):
-        Joggerss = Necklace.objects.get(id=id)
-        serializer = NecklaceSerializer(Joggerss,data=request.data)
+    if request.method == 'GET':
+        serializer = NecklaceSerializer(data)
+        return Response({'Necklace':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = NecklaceSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'Necklace':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Necklace.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
-class Women_ShirtAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Joggerss = Women_Shirt.objects.all()
-        serializer = WomenShirtSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def womenshirts(request):
+    if request.method == 'GET':
+        jackets = Women_Shirt.objects.all()
+        serializer = WomenShirtSerializer(jackets,many=True)
+        return Response({'WomenShirts': serializer.data})
+    elif request.method == 'POST':
         serializer = WomenShirtSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'WomenShirts':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def womenshirt(request):
+    try:
+        data = Women_Shirt.objects.get(pk=id)
+    except Women_Shirt.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class Women_ShirtDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Joggerss = Women_Shirt.objects.filter(id=id)
-        serializer = WomenShirtSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def put(self,request,id=None):
-        Joggerss = Women_Shirt.objects.get(id=id)
-        serializer = WomenShirtSerializer(Joggerss,data=request.data)
+    if request.method == 'GET':
+        serializer = WomenShirtSerializer(data)
+        return Response({'WomenShirt':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = WomenShirtSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'WomenShirt':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Women_Shirt.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class Women_JacketAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Joggerss = Women_Jacket.objects.all()
-        serializer = WomenJacketSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def womenjackets(request):
+    if request.method == 'GET':
+        jackets = Women_Jacket.objects.all()
+        serializer = WomenJacketSerializer(jackets,many=True)
+        return Response({'WomenJackets': serializer.data})
+    elif request.method == 'POST':
         serializer = WomenJacketSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'WomenJackets':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def womenjacket(request):
+    try:
+        data = Women_Jacket.objects.get(pk=id)
+    except Women_Jacket.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class Women_JacketDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Joggerss = Women_Jacket.objects.filter(id=id)
-        serializer = WomenJacketSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def put(self,request,id=None):
-        Joggerss = Women_Jacket.objects.get(id=id)
-        serializer = WomenJacketSerializer(Joggerss,data=request.data)
+    if request.method == 'GET':
+        serializer = WomenJacketSerializer(data)
+        return Response({'WomenJacket':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = WomenJacketSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'WomenJacket':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Women_Jacket.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class Women_PantsAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Joggerss = Women_Pants.objects.all()
-        serializer = WomenPantsSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def womenpants(request):
+    if request.method == 'GET':
+        womenpants = Women_Pants.objects.all()
+        serializer = WomenPantsSerializer(womenpants,many=True)
+        return Response({'WomenPants': serializer.data})
+    elif request.method == 'POST':
         serializer = WomenPantsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'WomenPants':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def womenpant(request):
+    try:
+        data = Women_Pants.objects.get(pk=id)
+    except Women_Pants.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class Women_PantsDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Joggerss = Women_Pants.objects.filter(id=id)
-        serializer = WomenPantsSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def put(self,request,id=None):
-        Joggerss = Women_Pants.objects.get(id=id)
-        serializer = WomenPantsSerializer(Joggerss,data=request.data)
+    if request.method == 'GET':
+        serializer = WomenPantsSerializer(data)
+        return Response({'WomenPant':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = WomenPantsSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'WomenPant':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Women_Pants.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
     
-class Women_JoggersAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,format=None):
-        Joggerss = Women_Joggers.objects.all()
-        serializer = WomenJoggersSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def post(self,request,format=None):
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def womenjoggers(request):
+    if request.method == 'GET':
+        joggers = Women_Joggers.objects.all()
+        serializer = WomenJoggersSerializer(joggers,many=True)
+        return Response({'WomenJoggers': serializer.data})
+    elif request.method == 'POST':
         serializer = WomenJoggersSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response({'WomenJoggers':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def womenjogger(request):
+    try:
+        data = Women_Joggers.objects.get(pk=id)
+    except Women_Joggers.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-class Women_JoggersDetailAPIView(APIView):
-    permission_classes  = [AllowAny]
-    def get(self,request,id=None):
-        Joggerss = Women_Joggers.objects.filter(id=id)
-        serializer = WomenJoggersSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-    
-    def put(self,request,id=None):
-        Joggerss = Women_Joggers.objects.get(id=id)
-        serializer = WomenJoggersSerializer(Joggerss,data=request.data)
+    if request.method == 'GET':
+        serializer = WomenJoggersSerializer(data)
+        return Response({'WomenJogger':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = WomenJoggersSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'WomenJogger':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Women_Joggers.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class CartAPIView(APIView):
-    permission_classes  = [IsAuthenticated]
-    def get(self,request,format=None):
-        Joggerss = Cart.objects.all()
-        serializer = CartSerializer(Joggerss,many=True)
-        return Response(serializer.data)
-
     
-    def post(self,request,format=None):
+
+@api_view(['GET','POST',])
+@permission_classes([IsAuthenticated])
+def carts(request):
+    if request.method == 'GET':
+        carts = Cart.objects.all()
+        serializer = CartSerializer(carts,many=True)
+        return Response({'Cart': serializer.data})
+    elif request.method == 'POST':
         serializer = CartSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-    def put(self,request,id=None):
-        Joggerss = Cart.objects.get(id=id)
-        serializer = CartSerializer(Joggerss,data=request.data)
+            return Response({'Cart':serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def cart(request):
+    try:
+        data = Cart.objects.get(pk=id)
+    except Cart.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = CartSerializer(data)
+        return Response({'Cart':serializer.data})
+    elif request.method == 'DELETE':
+        data.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    elif request.method == 'POST':
+        serializer = CartSerializer(data,request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({'Cart':serializer.data})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id=None):
-        shirts = Cart.objects.filter(id=id)
-        shirts.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+    
 
 # Create your views here.
